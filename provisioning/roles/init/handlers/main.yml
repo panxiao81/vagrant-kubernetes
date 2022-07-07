@@ -1,0 +1,6 @@
+---
+# handlers file for init
+- name: restart systemd-modules-load
+  systemd:
+    name: systemd-modules-load
+    state: restarted

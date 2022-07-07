@@ -1,0 +1,33 @@
+---
+# tasks file for init
+
+- name: upgrade system
+  apt:
+    upgrade: true
+    update_cache: true
+
+- name: load kernel modules
+  ansible.builtin.copy:
+    content: |
+      br_netfilter
+      overlay
+    dest: /etc/modules-load.d/k8s.conf
+  notify: restart systemd-modules-load
+
+
+- name: set kernel variables
+  ansible.posix.sysctl:
+    name: "{{item}}"
+    value: '1'
+    state: present
+  with_items: 
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.ipv4.ip_forward
+
+- name: install nfs utility
+  apt:
+    name: nfs-common
+    state: present
+
+

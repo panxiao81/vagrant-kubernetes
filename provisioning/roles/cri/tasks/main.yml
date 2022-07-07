@@ -1,0 +1,25 @@
+- name: create temp directory
+  tempfile:
+    state: directory
+  register: tempdir_1
+  
+- debug: 
+    msg: Create tempdir {{tempdir_1}}
+  
+- name: download containerd
+  uri:
+    url: "{{CONTAINERD_URL}}"
+    dest: "{{tempdir_1}}"
+
+- name: install containerd
+  unarchive:
+    src: "{{tempdir_1}}{{CONTAINERD_FILE}}"
+    dest: /usr/local
+  when: not ansible_check_mode
+
+- name: start containerd for the first time
+  systemd:
+    name: containerd
+    state: started
+    enabled: true
+    daemon_reload: true
