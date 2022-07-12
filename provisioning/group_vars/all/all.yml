@@ -1,25 +1,28 @@
 ---
 switch_mirror: true
 ubuntu_apt_mirror: https://mirrors.tuna.tsinghua.edu.cn/ubuntu/
-http_proxy: http://nexus.ddupan.top:3142/
+# http_proxy: http://nexus.ddupan.top:3142/  # Only for apt, you could use if you are using Apt-Cacher-ng or something like it.
 upgrade_system: true
-network_plugin: flannel
-kube_version: v1.23.8
+network_plugin: flannel # Only flannel is supported for now
+kube_version: v1.23.8 # From v1.22 to v1.24
 
 cluster_name: kubernetes
 dns_domain: cluster.local
 kube_service_addresses: 10.96.0.0/12
 kube_pods_subnet: 10.244.0.0/16
 kube_image_repo: k8s.gcr.io
+# kube_image_repo: registry.cn-hangzhou.aliyuncs.com/google_containers  # If upstream could not use if you're in China
 
 crun_enabled: false
 
 kube_utils:
-  apt_install: false
-  # keyring_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  keyring_url: https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg
-  # repository_url: https://apt.kubernetes.io/
-  repository_url: https://mirrors.aliyun.com/kubernetes/apt/
-# containerd_registries:
-#    "docker.io":
-#    - "https://registry-1.docker.io"
+    apt_install: false
+    keyring_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    # keyring_url: https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg
+    repository_url: https://apt.kubernetes.io/
+    # repository_url: https://mirrors.aliyun.com/kubernetes/apt/
+
+# Configure container registry mirrors below.
+containerd_registries:
+    "docker.io":
+        - "https://registry-1.docker.io"
