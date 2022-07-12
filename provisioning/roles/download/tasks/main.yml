@@ -1,0 +1,19 @@
+---
+# tasks file for download
+
+- name: download | Create download cache folder
+  file:
+    path: ../downloads
+    state: directory
+  delegate_to: localhost
+  connection: local
+  delegate_facts: false
+  run_once: true
+  become: false
+
+- name: download | Download items
+  include_tasks: download_file.yml
+  vars:
+    download: "{{ item.value }}"
+  loop: "{{ downloads | dict2items }}"
+  when: item.value.enabled

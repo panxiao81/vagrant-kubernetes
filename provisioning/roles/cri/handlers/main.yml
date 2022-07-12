@@ -1,2 +1,7 @@
 ---
 # handlers file for cri
+
+- name: restart containerd
+  systemd:
+    name: containerd.service
+    state: restarted

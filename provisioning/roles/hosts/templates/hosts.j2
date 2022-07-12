@@ -7,5 +7,5 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 {% for host in groups["all"] %}
-{{hostvars[host].ansible_facts.default_ipv4.address}}    {{hostvars[host].ansible_facts.hostname}}
+{{hostvars[host].ansible_facts.eth1.ipv4.address}}    {{hostvars[host].ansible_facts.hostname}}
 {% endfor %}

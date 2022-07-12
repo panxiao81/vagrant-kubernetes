@@ -1,0 +1,15 @@
+---
+# tasks file for kube-utils
+
+- name: install kube-utils from apt repository
+  include_tasks: apt.yml
+  when: kube_utils.apt_install
+
+- name: install kube-utils from binary
+  include_tasks: binary.yml
+  when: not kube_utils.apt_install
+
+- name: install kubectl bash completion
+  shell: kubectl completion bash > /etc/bash_completion.d/kubectl.sh
+  when: ansible_os_family in ["Debian","RedHat"]
+  ignore_errors: true

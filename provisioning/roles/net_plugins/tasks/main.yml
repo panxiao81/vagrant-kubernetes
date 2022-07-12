@@ -1,0 +1,9 @@
+---
+- name: Install openshift python package
+  ansible.builtin.pip:
+    name: openshift
+  when: inventory_hostname == groups['master'][0]
+
+- name: Install network Plugins
+  include_role:
+    name: net_plugins/{{ network_plugin }}

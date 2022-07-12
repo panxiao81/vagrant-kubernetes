@@ -1,5 +1,4 @@
 ---
-# defaults file for init
-CONTAINERD_VERSION: "1.6.6"
-CONTAINERD_FILE: cri-containerd-{{CONTAINERD_VERSION}}-linux-amd64.tar.gz
-CONTAINERD_URL: "https://github.com/containerd/containerd/releases/download/v{{CONTAINERD_VERSION}}/cri-containerd-{{CONTAINERD_VERSION}}-linux-amd64.tar.gz"
+switch_mirror: false
+ubuntu_apt_mirror: mirrors.tuna.tsinghua.edu.cn
+upgrade_system: false

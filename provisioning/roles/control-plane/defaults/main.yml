@@ -1,0 +1,8 @@
+---
+# defaults file for control-plane
+
+cluster_name: kubernetes
+dns_domain: cluster.local
+kube_service_addresses: 10.96.0.0/12
+kube_pods_subnet: 10.244.0.0/16
+kube_image_repo: k8s.gcr.io

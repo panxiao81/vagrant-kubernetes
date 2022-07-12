@@ -1,0 +1,91 @@
+---
+# tasks file for worker
+- name: Set kubeadm_discovery_address
+  set_fact:
+    kubeadm_discovery_address: "{{ hostvars[groups['master'][0]].ansible_facts.hostname }}:6443"
+
+- name: Check if kubelet.conf exists
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: kubelet_conf
+
+- name: Check if kubeadm CA cert is accessible
+  stat:
+    path: /etc/kubernetes/ssl/ca.crt
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: kubeadm_ca_stat
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+
+- name: Calculate kubeadm CA cert hash
+  shell: set -o pipefail && openssl x509 -pubkey -in /etc/kubernetes/ssl/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.*
+    //'
+  args:
+    executable: /bin/bash
+  register: kubeadm_ca_hash
+  when:
+    - kubeadm_ca_stat.stat is defined
+    - kubeadm_ca_stat.stat.exists
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  changed_when: false
+
+- name: Create kubeadm token for joining nodes with 24h expiration
+  command: kubeadm token create
+  register: temp_token
+  delegate_to: "{{ groups['master'][0] }}"
+  when: kubeadm_token is not defined
+  changed_when: false
+
+- name: Set kubeadm_token to generated token
+  set_fact:
+    kubeadm_token: "{{ temp_token.stdout }}"
+  when: kubeadm_token is not defined
+
+- name: Unsure kubernetes config directory
+  file:
+    path: /etc/kubernetes/
+    state: directory
+
+- name: Create kubeadm client config
+  template:
+    src: kubeadm-client.conf.j2
+    dest: /etc/kubernetes/kubeadm-client.conf
+    backup: true
+    mode: 0640
+  when: not {{ inventory_hostname in groups['master'] }}
+
+- name: Join to cluster if needed
+  when: not {{ inventory_hostname in groups['master'] }}  and (not kubelet_conf.stat.exists)
+  block:
+    - name: Join to cluster
+      command: >-
+        timeout -k 300s 300s
+        kubeadm join
+        --config /etc/kubernetes/kubeadm-client.conf
+        --ignore-preflight-errors=DirAvailable--etc-kubernetes-manifests
+      register: kubeadm_join
+      changed_when: kubeadm_join is success
+
+  rescue:
+    - name: Join to cluster with ignores
+      command: >-
+        timeout -k {{ kubeadm_join_timeout }} {{ kubeadm_join_timeout }}
+        kubeadm join
+        --config /etc/kubernetes/kubeadm-client.conf
+        --ignore-preflight-errors=all
+      register: kubeadm_join
+      changed_when: kubeadm_join is success
+
+  always:
+    - name: Display kubeadm join stderr if any
+      when: kubeadm_join is failed
+      debug:
+        msg: |
+          Joined with warnings
+          {{ kubeadm_join.stderr_lines }}

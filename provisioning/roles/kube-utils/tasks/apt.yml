@@ -1,0 +1,38 @@
+---
+- name: install kubernetes repository dependency
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+
+- name: check kubernetes keyring is exists
+  stat:
+    path: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+  register: kubernetes_keyring
+
+- name: add kubernetes repository keyring
+  uri:
+    url: "{{ kube_utils.keyring_url }}"
+    dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+  when: not kubernetes_keyring.stat.exists
+
+- name: remove kubernetes repository if exists
+  file:
+    path: /etc/apt/sources.list.d/kubernetes.list
+    state: absent
+
+- name: add kubernetes repository
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] {{ kube_utils.repository_url }} kubernetes-xenial main
+    filename: kubernetes
+
+- name: install kubernetes utilites
+  apt:
+    name:
+      - kubelet={{ kube_version }}-00
+      - kubeadm={{ kube_version }}-00
+      - kubectl={{ kube_version }}-00
+    state: present
+    update_cache: true

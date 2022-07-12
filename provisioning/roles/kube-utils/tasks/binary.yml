@@ -1,0 +1,6 @@
+---
+- name: install kubelet
+  include_tasks: kubelet.yml
+
+- name: install kubeadm and kubectl
+  include_tasks: kube-tools.yml

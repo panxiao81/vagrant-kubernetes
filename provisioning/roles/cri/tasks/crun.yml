@@ -1,0 +1,15 @@
+---
+- name: download crun
+  include_tasks: ../../download/tasks/download_file.yml
+  vars:
+    download: "{{ downloads.crun }}"
+  run_once: true
+
+- name: install crun
+  copy:
+    src: /vagrant/downloads/crun
+    dest: /usr/local/bin
+    mode: "755"
+    owner: root
+    group: root
+    remote_src: true

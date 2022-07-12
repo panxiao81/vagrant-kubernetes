@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  pre_tasks:
+    - name: include group_vars
+      include_vars: "{{ item }}"
+      with_items:
+        - group_vars/all/all.yml
+        - group_vars/all/download.yml
+
+  roles:
+    - download

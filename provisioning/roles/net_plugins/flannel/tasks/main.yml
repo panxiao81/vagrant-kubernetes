@@ -1,0 +1,15 @@
+---
+# tasks file for flannel
+- name: Flannel | Create Flannel manifests
+  template:
+    src: kube-flannel.yml.j2
+    dest: /etc/kubernetes/kube-flannel.yml
+    mode: 0644
+  when:
+    - inventory_hostname == groups['master'][0]
+
+- name: Flannel | Start Resources
+  kubernetes.core.k8s:
+    src: /etc/kubernetes/kube-flannel.yml
+    state: present
+  when: inventory_hostname == groups['master'][0]

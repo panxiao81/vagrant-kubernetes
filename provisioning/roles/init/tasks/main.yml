@@ -1,10 +1,25 @@
 ---
 # tasks file for init
 
+- name: switch apt mirror
+  template:
+    src: sources.list.j2
+    dest: /etc/apt/sources.list
+  when: switch_mirror and ubuntu_apt_mirror is defined
+
+- name: config apt proxy
+  template:
+    src: 00proxy.conf.j2
+    dest: /etc/apt/apt.conf.d/00proxy.conf
+  when: http_proxy is defined
+
+- name: update apt cache
+  apt: update_cache=true
+
 - name: upgrade system
   apt:
     upgrade: true
-    update_cache: true
+  when: upgrade_system
 
 - name: load kernel modules
   ansible.builtin.copy:
@@ -14,20 +29,54 @@
     dest: /etc/modules-load.d/k8s.conf
   notify: restart systemd-modules-load
 
+- name: Modprobe nf_conntrack_ipv4
+  modprobe:
+    name: nf_conntrack_ipv4
+    state: present
+  register: modprobe_nf_conntrack_ipv4
+  ignore_errors: true # noqa ignore-errors
+
+- name: Modprobe Kernel Module for IPVS
+  copy:
+    content: |
+      ip_vs
+      ip_vs_rr
+      ip_vs_wrr
+      ip_vs_sh
+      {% if modprobe_nf_conntrack_ipv4 is success -%}
+      nf_conntrack_ipv4
+      {%-   endif -%}
+    dest: /etc/modules-load.d/k8s-ipvs.conf
+  notify: restart systemd-modules-load
+
+- meta: flush_handlers
 
 - name: set kernel variables
   ansible.posix.sysctl:
-    name: "{{item}}"
-    value: '1'
+    name: "{{ item }}"
+    value: "1"
     state: present
-  with_items: 
+  with_items:
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
     - net.ipv4.ip_forward
 
-- name: install nfs utility
+- name: install utility
   apt:
-    name: nfs-common
+    name:
+      - nfs-common
+      - bash-completion
+      - socat
+      - conntrack
+      - python3-pip
     state: present
 
+- name: Disable SWAP since kubernetes can't work with swap enabled (1/2)
+  shell: |
+    swapoff -a
 
+- name: Disable SWAP in fstab since kubernetes can't work with swap enabled (2/2)
+  replace:
+    path: /etc/fstab
+    regexp: ^([^#].*?\sswap\s+sw\s+.*)$
+    replace: "# \\1"

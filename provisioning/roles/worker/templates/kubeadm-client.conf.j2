@@ -1,0 +1,17 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: {{ kubeadm_discovery_address }}
+    token: {{ kubeadm_token }}
+{% if kubeadm_ca_hash.stdout is defined %}
+    caCertHashes:
+    - sha256:{{ kubeadm_ca_hash.stdout }}
+{% else %}
+    unsafeSkipCAVerification: true
+{% endif %}
+  timeout: 300s
+  tlsBootstrapToken: {{ kubeadm_token }}
+nodeRegistration:
+  criSocket: /var/run/containerd/containerd.sock

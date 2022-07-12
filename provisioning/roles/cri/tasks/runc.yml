@@ -1,0 +1,15 @@
+---
+- name: download runc
+  include_tasks: ../../download/tasks/download_file.yml
+  vars:
+    download: "{{ downloads.runc }}"
+  run_once: true
+
+- name: install runc
+  copy:
+    src: /vagrant/downloads/runc
+    dest: /usr/local/bin
+    mode: "755"
+    owner: root
+    group: root
+    remote_src: true

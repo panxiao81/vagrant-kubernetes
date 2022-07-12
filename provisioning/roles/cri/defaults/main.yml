@@ -1,5 +1,6 @@
 ---
-# defaults file for init
-CONTAINERD_VERSION: "1.6.6"
-CONTAINERD_FILE: cri-containerd-{{CONTAINERD_VERSION}}-linux-amd64.tar.gz
-CONTAINERD_URL: "https://github.com/containerd/containerd/releases/download/v{{CONTAINERD_VERSION}}/cri-containerd-{{CONTAINERD_VERSION}}-linux-amd64.tar.gz"
+crun_enabled: false
+
+containerd_registries:
+  docker.io:
+    - https://registry-1.docker.io

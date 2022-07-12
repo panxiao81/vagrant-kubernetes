@@ -1,0 +1,24 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: "{{ hostvars[inventory_hostname].ansible_facts.eth1.ipv4.address }}"
+  bindPort: 6443
+nodeRegistration:
+  criSocket: /var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+clusterName: "{{ cluster_name | default("kubernetes") }}"
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+dns: {}
+networking:
+  dnsDomain: {{ dns_domain }}
+  serviceSubnet: "{{ kube_service_addresses }}"
+  podSubnet: "{{ kube_pods_subnet }}"
+kubernetesVersion: {{ kube_version }}
+imageRepository: {{ kube_image_repo }}
+apiServer:
+  timeoutForControlPlane: 5m0s

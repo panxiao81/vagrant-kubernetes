@@ -1,0 +1,205 @@
+---
+# defaults file for download
+
+kube_version: v1.23.8
+
+kubeadm_version: "{{ kube_version }}"
+crun_version: 1.4.5
+runc_version: v1.1.3
+containerd_version: 1.6.6
+cri_dockerd_version: 0.2.2
+nerdctl_version: 0.20.0
+cni_version: v1.1.1
+
+kube_major_version: "{{ kube_version | regex_replace('^v([0-9])+\\.([0-9]+)\\.[0-9]+', 'v\\1.\\2') }}"
+
+crictl_supported_versions:
+  v1.24: v1.24.0
+  v1.23: v1.23.0
+  v1.22: v1.22.0
+crictl_version: "{{ crictl_supported_versions[kube_major_version] }}"
+
+kubelet_download_url: https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/amd64/kubelet
+kubectl_download_url: https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/amd64/kubectl
+kubeadm_download_url: https://storage.googleapis.com/kubernetes-release/release/{{ kubeadm_version }}/bin/linux/amd64/kubeadm
+runc_download_url: https://github.com/opencontainers/runc/releases/download/{{ runc_version }}/runc.amd64
+crun_download_url: https://github.com/containers/crun/releases/download/{{ crun_version }}/crun-{{ crun_version }}-linux-amd64
+nerdctl_download_url: https://github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/nerdctl-{{ nerdctl_version }}-linux-amd64.tar.gz
+containerd_download_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-amd64.tar.gz
+cri_dockerd_download_url: https://github.com/Mirantis/cri-dockerd/releases/download/v{{ cri_dockerd_version }}/cri-dockerd-{{ cri_dockerd_version }}.amd64.tgz
+crictl_download_url: https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz
+cni_download_url: https://github.com/containernetworking/plugins/releases/download/{{ cni_version }}/cni-plugins-linux-amd64-{{ cni_version }}.tgz
+
+nerdctl_checksums:
+  0.20.0: e23d50316f9e268ca4a21bd4614a544f53b2cecf352144ceefa038da512bb29a
+
+containerd_checksums:
+  1.6.6: 0212869675742081d70600a1afc6cea4388435cc52bf5dc21f4efdcb9a92d2ef
+
+runc_checksums:
+  v1.1.3: 6e8b24be90fffce6b025d254846da9d2ca6d65125f9139b6354bab0272253d01
+
+crun_checksums:
+  1.4.5: 84cf20a6060cd53ac21a0590367d1ab65f74baae005c42f2d5bc1af918470455
+
+cni_checksums:
+  v1.1.1: b275772da4026d2161bf8a8b41ed4786754c8a93ebfb6564006d5da7f23831e5
+
+crictl_checksums:
+  v1.24.0: 3df4a4306e0554aea4fdc26ecef9eea29a58c8460bebfaca3405799787609880
+  v1.23.0: b754f83c80acdc75f93aba191ff269da6be45d0fc2d3f4079704e7d1424f1ca8
+  v1.22.0: 45e0556c42616af60ebe93bf4691056338b3ea0001c0201a6a8ff8b1dbc0652a
+
+kubeadm_checksums:
+  v1.24.2: 028f73b8e7c2ae389817d34e0cb829a814ce2fac0a535a3aa0708f3133e3e712
+  v1.24.1: 15e3193eecbc69330ada3f340c5a47999959bc227c735fa95e4aa79470c085d0
+  v1.24.0: 5e58a29eaaf69ea80e90d9780d2a2d5f189fd74f94ec3bec9e3823d472277318
+  v1.23.8: edbd60fd6a7e11c71f848b3a6e5d1b5a2bb8ebd703e5490caa8db267361a7b89
+  v1.23.7: d7d863213eeb4791cdbd7c5fd398cf0cc2ef1547b3a74de8285786040f75efd2
+  v1.23.6: 9213c7d738e86c9a562874021df832735236fcfd5599fd4474bab3283d34bfd7
+  v1.23.5: 8eebded187ee84c97003074eaa347e34131fef3acdf3e589a9b0200f94687667
+  v1.23.4: c91912c9fd34a50492f889e08ff94c447fdceff150b588016fecc9051a1e56b8
+  v1.23.3: 57ec7f2921568dcf4cda0699b877cc830d49ddd2709e035c339a5afc3b83586f
+  v1.23.2: 58487391ec37489bb32fe532e367995e9ecaeafdb65c2113ff3675e7a8407219
+  v1.23.1: 4d5766cb90050ee84e15df5e09148072da2829492fdb324521c4fa6d74d3aa34
+  v1.23.0: e21269a058d4ad421cf5818d4c7825991b8ba51cd06286932a33b21293b071b0
+  v1.22.11: da3594b4e905627fd5c158531280e40a71dadf44f1f0b6c061a1b729a898dd9b
+  v1.22.10: df5e090a3c0e24b92b26f22f1d7689b6ea860099ea89b97edf5d4c19fa6da0ca
+  v1.22.9: e3061f3a9c52bff82ae740c928fe389a256964a5756d691758bf3611904d7183
+  v1.22.8: fc10b4e5b66c9bfa6dc297bbb4a93f58051a6069c969905ef23c19680d8d49dc
+  v1.22.7: 7e4be37fc5ddeeae732886bf83c374198813e76d84ed2f6590145e08ece1a8b2
+  v1.22.6: 0bf8e47ad91215cd8c5e0ded565645aeb1ad6f0a9223a2486eb913bff929d472
+  v1.22.5: a512be0fa429f43d3457472efd73529cd2ba2cd54ef714faf6b69486beea054f
+  v1.22.4: 33b799df2941f12a53ffe995d86a385c35d3c543f9d2c00c0cdb47ec91a98c5c
+  v1.22.3: 3964e6fd46052eb4a9672421d8e8ce133b83b45abb77481b688dc6375390e480
+  v1.22.2: 4ff09d3cd2118ee2670bc96ed034620a9a1ea6a69ef38804363d4710a2f90d8c
+  v1.22.1: 50a5f0d186d7aefae309539e9cc7d530ef1a9b45ce690801655c2bee722d978c
+  v1.22.0: 90a48b92a57ff6aef63ff409e2feda0713ca926b2cd243fe7e88a84c483456cc
+
+kubectl_checksums:
+  v1.24.2: f15fb430afd79f79ef7cf94a4e402cd212f02d8ec5a5e6a7ba9c3d5a2f954542
+  v1.24.1: 0ec3c2dbafc6dd27fc8ad25fa27fc527b5d7356d1830c0efbb8adcf975d9e84a
+  v1.24.0: 94d686bb6772f6fb59e3a32beff908ab406b79acdfb2427abdc4ac3ce1bb98d7
+  v1.23.8: 299803a347e2e50def7740c477f0dedc69fc9e18b26b2f10e9ff84a411edb894
+  v1.23.7: b4c27ad52812ebf3164db927af1a01e503be3fb9dc5ffa058c9281d67c76f66e
+  v1.23.6: 703a06354bab9f45c80102abff89f1a62cbc2c6d80678fd3973a014acc7c500a
+  v1.23.5: 715da05c56aa4f8df09cb1f9d96a2aa2c33a1232f6fd195e3ffce6e98a50a879
+  v1.23.4: 3f0398d4c8a5ff633e09abd0764ed3b9091fafbe3044970108794b02731c72d6
+  v1.23.3: d7da739e4977657a3b3c84962df49493e36b09cc66381a5e36029206dd1e01d0
+  v1.23.2: 5b55b58205acbafa7f4e3fc69d9ce5a9257be63455db318e24db4ab5d651cbde
+  v1.23.1: 156fd5e7ebbedf3c482fd274089ad75a448b04cf42bc53f370e4e4ea628f705e
+  v1.23.0: 2d0f5ba6faa787878b642c151ccb2c3390ce4c1e6c8e2b59568b3869ba407c4f
+  v1.22.11: a61c697e3c9871da7b609511248e41d9c9fb6d9e50001425876676924761586b
+  v1.22.10: 225bc8d4ac86e3a9e36b85d2d9cb90cd4b4afade29ba0292f47834ecf570abf2
+  v1.22.9: ae6a9b585f9a366d24bb71f508bfb9e2bb90822136138109d3a91cd28e6563bb
+  v1.22.8: 761bf1f648056eeef753f84c8365afe4305795c5f605cd9be6a715483fe7ca6b
+  v1.22.7: 4dd14c5b61f112b73a5c9c844011a7887c4ffd6b91167ca76b67197dee54d388
+  v1.22.6: 1ab07643807a45e2917072f7ba5f11140b40f19675981b199b810552d6af5c53
+  v1.22.5: fcb54488199c5340ff1bc0e8641d0adacb27bb18d87d0899a45ddbcc45468611
+  v1.22.4: 21f24aa723002353eba1cc2668d0be22651f9063f444fd01626dce2b6e1c568c
+  v1.22.3: 0751808ca8d7daba56bf76b08848ef5df6b887e9d7e8a9030dd3711080e37b54
+  v1.22.2: aeca0018958c1cae0bf2f36f566315e52f87bdab38b440df349cd091e9f13f36
+  v1.22.1: 78178a8337fc6c76780f60541fca7199f0f1a2e9c41806bded280a4a5ef665c9
+  v1.22.0: 703e70d49b82271535bc66bc7bd469a58c11d47f188889bd37101c9772f14fa1
+
+kubelet_checksums:
+  v1.24.2: 13da57d32be1debad3d8923e481f30aaa46bca7030b7e748b099d403b30e5343
+  v1.24.1: fc352d5c983b0ccf47acd8816eb826d781f408d27263dd8f761dfb63e69abfde
+  v1.24.0: 3d98ac8b4fb8dc99f9952226f2565951cc366c442656a889facc5b1b2ec2ba52
+  v1.23.8: 1ba15ad4d9d99cfc3cbef922b5101492ad74e812629837ac2e5705a68cb7af1e
+  v1.23.7: 518f67200e853253ed6424488d6148476144b6b796ec7c6160cff15769b3e12a
+  v1.23.6: fbb83e35f6b9f7cae19c50694240291805ca9c4028676af868306553b3e9266c
+  v1.23.5: 253b9db2299b09b91e4c09781ce1d2db6bad2099cf16ba210245159f48d0d5e4
+  v1.23.4: ec3db57edcce219c24ef37f4a6a2eef5a1543e4a9bd15e7ecc993b9f74950d91
+  v1.23.3: 8f9d2dd992af82855fbac2d82e030429b08ba7775e4fee7bf043eb857dfb0317
+  v1.23.2: c3c4be17910935d234b776288461baf7a9c6a7414d1f1ac2ef8d3a1af4e41ab6
+  v1.23.1: 7ff47abf62096a41005d18c6d482cf73f26b613854173327fa9f2b98720804d4
+  v1.23.0: 4756ff345dd80704b749d87efb8eb294a143a1f4a251ec586197d26ad20ea518
+  v1.22.11: 50fb1ede16c15dfe0bcb9fa98148d969ae8efeb8b599ce5eb5f09ab78345c9d1
+  v1.22.10: c1aa6e9f59cfc765d33b382f604140699ab97c9c4212a905d5e1bcd7ef9a5c8b
+  v1.22.9: 61530a9e6a5cb1f971295de860a8ade29db65d0dff50d1ffff3de1155dfd0c02
+  v1.22.8: 2e6d1774f18c4d4527c3b9197a64ea5705edcf1b547c77b3e683458d771f3ce7
+  v1.22.7: cfc96b5f781bfbfdcb05115f4e26a5a6afc9d74bb4a5647c057b2c13086fb24d
+  v1.22.6: 7b009835b0ab74aa16ebf57f5179893035e0cf5994e1bcf9b783275921a0393a
+  v1.22.5: 2be340f236a25881969eaa7d58b2279a4e31dc393cab289a74c78c0c37ba2154
+  v1.22.4: 8d014cfe511d8c0a127b4e65ae2a6e60db592f9b1b512bb822490ea35958b10d
+  v1.22.3: 3f00a5f98cec024abace5bcc3580b80afc78181caf52e100fc800e588774d6eb
+  v1.22.2: 0fd6572e24e3bebbfd6b2a7cb7adced41dad4a828ef324a83f04b46378a8cb24
+  v1.22.1: 2079780ad2ff993affc9b8e1a378bf5ee759bf87fdc446e6a892a0bbd7353683
+  v1.22.0: fec5c596f7f815f17f5d7d955e9707df1ef02a2ca5e788b223651f83376feb7f
+
+downloads:
+  kubeadm:
+    enabled: "{{ not kube_utils.apt_install }}"
+    file: true
+    dest: "{{ downloads_dir | default('../downloads') }}/kubeadm-{{ kubeadm_version }}-amd64"
+    url: "{{ kubeadm_download_url }}"
+    sha256: "{{ kubeadm_checksums[kubeadm_version] }}"
+    unarchive: false
+
+  kubelet:
+    enabled: "{{ not kube_utils.apt_install }}"
+    file: true
+    version: "{{ kube_version }}"
+    dest: "{{ downloads_dir | default('../downloads') }}/kubelet-{{ kube_version }}-amd64"
+    url: "{{ kubelet_download_url }}"
+    sha256: "{{ kubelet_checksums[kube_version] }}"
+    unarchive: false
+
+  kubectl:
+    enabled: "{{ not kube_utils.apt_install }}"
+    file: true
+    version: "{{ kube_version }}"
+    dest: "{{ downloads_dir | default('../downloads') }}/kubectl-{{ kube_version }}-amd64"
+    url: "{{ kubectl_download_url }}"
+    sha256: "{{ kubectl_checksums[kube_version] }}"
+    unarchive: false
+
+  cni:
+    enabled: "{{ not kube_utils.apt_install }}"
+    file: true
+    version: "{{ cni_version }}"
+    dest: "{{ downloads_dir | default('../downloads') }}/cni-plugins-linux-amd64-{{ cni_version }}.tgz"
+    sha256: "{{ cni_checksums[cni_version] }}"
+    url: "{{ cni_download_url }}"
+    unarchive: false
+
+  crictl:
+    file: true
+    enabled: "{{ not kube_utils.apt_install }}"
+    dest: "{{ downloads_dir | default('../downloads') }}/crictl-{{ crictl_version }}-linux-amd64.tar.gz"
+    sha256: "{{ crictl_checksums[crictl_version] }}"
+    url: "{{ crictl_download_url }}"
+    unarchive: false
+
+  crun:
+    file: true
+    enabled: "{{ crun_enabled }}"
+    dest: "{{ downloads_dir | default('../downloads') }}/crun"
+    url: "{{ crun_download_url }}"
+    sha256: 84cf20a6060cd53ac21a0590367d1ab65f74baae005c42f2d5bc1af918470455
+    unarchive: false
+
+  runc:
+    file: true
+    enabled: true
+    dest: "{{ downloads_dir | default('../downloads') }}/runc"
+    url: "{{ runc_download_url }}"
+    sha256: 6e8b24be90fffce6b025d254846da9d2ca6d65125f9139b6354bab0272253d01
+    unarchive: false
+
+  containerd:
+    enabled: true
+    file: true
+    dest: "{{ downloads_dir | default('../downloads') }}/containerd-{{ containerd_version }}-linux-amd64.tar.gz"
+    url: "{{ containerd_download_url }}"
+    sha256: "{{ containerd_checksums[containerd_version] }}"
+    unarchive: false
+
+  nerdctl:
+    file: true
+    enabled: true
+    dest: "{{ downloads_dir | default('../downloads') }}/nerdctl-{{ nerdctl_version }}-linux-amd64.tar.gz"
+    url: "{{ nerdctl_download_url }}"
+    sha256: "{{ nerdctl_checksums[nerdctl_version] }}"
+    unarchive: false

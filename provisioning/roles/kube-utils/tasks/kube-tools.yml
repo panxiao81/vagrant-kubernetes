@@ -1,0 +1,30 @@
+---
+- name: download kubeadm
+  include_tasks: ../../download/tasks/download_file.yml
+  vars:
+    download: "{{ downloads.kubeadm }}"
+  run_once: true
+
+- name: install kubeadm
+  copy:
+    src: /vagrant/downloads/kubeadm-{{ kube_version }}-amd64
+    dest: /usr/local/bin/kubeadm
+    remote_src: true
+    mode: "755"
+    owner: root
+    group: root
+
+- name: download kubectl
+  include_tasks: ../../download/tasks/download_file.yml
+  vars:
+    download: "{{ downloads.kubectl }}"
+  run_once: true
+
+- name: install kubectl
+  copy:
+    src: /vagrant/downloads/kubectl-{{ kube_version }}-amd64
+    dest: /usr/local/bin/kubectl
+    remote_src: true
+    mode: "755"
+    owner: root
+    group: root

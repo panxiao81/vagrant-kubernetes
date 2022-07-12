@@ -1,9 +1,43 @@
 ---
+# - name: Gather facts
+#   hosts: all
+#   become: false
+#   gather_facts: false
+#   tasks:
+#     - setup: {}
+
 - hosts: all
   become: true
-
   roles:
-  - hosts
-  - init
-  - cri
-  
+    - hosts
+    - init
+    - cri
+    - kube-utils
+
+- hosts: master
+  gather_facts: false
+  become: true
+  roles:
+    - control-plane
+
+- hosts: all
+  gather_facts: false
+  become: true
+  roles:
+    - worker
+
+- hosts: all
+  gather_facts: false
+  become: true
+  roles:
+    - client
+    - net_plugins
+
+- hosts: all
+  gather_facts: false
+  become: false
+  pre_tasks:
+    - name: Gather facts
+      setup: {}
+  roles:
+    - client

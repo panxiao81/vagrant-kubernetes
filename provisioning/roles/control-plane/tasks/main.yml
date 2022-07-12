@@ -1,0 +1,63 @@
+---
+# tasks file for control-plane
+
+- name: check if kubeadm has already run
+  stat:
+    path: /var/lib/kubelet/config.yaml
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: kubeadm_already_run
+
+- name: Unsure kubernetes config directory
+  file:
+    path: /etc/kubernetes/
+    state: directory
+
+- name: create kubeadm config
+  template:
+    src: kubeadm-config.yaml.j2
+    dest: /etc/kubernetes/kubeadm-config.yaml
+    mode: 0640
+
+- name: kubeadm | Initialize first master
+  command: >-
+    timeout -k 300s 300s
+    kubeadm init
+    --config=/etc/kubernetes/kubeadm-config.yaml
+    --ignore-preflight-errors=all
+  register: kubeadm_init
+  # Retry is because upload config sometimes fails
+  retries: 3
+  until: kubeadm_init is succeeded or "field is immutable" in kubeadm_init.stderr
+  when: not kubeadm_already_run.stat.exists
+  failed_when: kubeadm_init.rc != 0 and "field is immutable" not in kubeadm_init.stderr
+
+- name: set kubeadm certificate key
+  set_fact:
+    kubeadm_certificate_key: "{{ item | regex_search('--certificate-key ([^ ]+)','\\1') | first }}"
+  with_items: "{{ hostvars[groups['master'][0]]['kubeadm_init'].stdout_lines | default([]) }}"
+  when:
+    - kubeadm_certificate_key is not defined
+    - (item | trim) is match('.*--certificate-key.*')
+
+- name: Create kubeadm token for joining nodes with 24h expiration
+  command: kubeadm --kubeconfig /etc/kubernetes/admin.conf token create
+  changed_when: false
+  register: temp_token
+  retries: 5
+  delay: 5
+  until: temp_token is succeeded
+  when: kubeadm_token is not defined
+
+- name: Set kubeadm_token
+  set_fact:
+    kubeadm_token: "{{ temp_token.stdout }}"
+  when: temp_token.stdout is defined
+
+- name: kubeadm | Remove taint for master with node role
+  command: kubectl taint node {{ inventory_hostname }} {{ item }}
+  with_items:
+    - node-role.kubernetes.io/master:NoSchedule-
+    - node-role.kubernetes.io/control-plane:NoSchedule-
+  failed_when: false
